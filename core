@@ -1,0 +1,48 @@
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+entity matrix_mult is
+    port (  Clock: in std_logic; 
+            reset : in std_logic;   --active high reset
+            start : in std_logic;   --A '1' starts the matrix multiplication process.
+            A,B : in unsigned(71 downto 0);
+            C : out unsigned(143 downto 0);
+            done : out std_logic    --a '1' indicates that multiplication is done and result is availble at C.
+            );
+end entity;
+
+architecture Behav of matrix_mult is
+
+begin 
+
+sm : process (Clock,reset)  
+variable c_reg : unsigned(15 downto 0):= (others => '0');
+
+begin
+    if(reset = '1') then
+        done <= '0';
+        C <= (others => '0');
+        c_reg := (others => '0');
+    elsif rising_edge(Clock) then
+        if (start = '1') then 
+        
+                   for i in 0 to 2 loop -- row 
+                            for j in 0 to 2 loop -- column
+                                     for k in 0 to 2 loop -- product
+                                       c_reg  := c_reg + (A((71-(8*k+24*i)) downto (64-(8*k+24*i))) * B((71-(8*k+24*j)) downto (64-(8*k+24*j)))); 
+                                     end loop;
+                                 C((143-(16*j+48*i)) downto (128-(16*j+48*i))) <= c_reg;  -- product to C output vector
+                                 c_reg := (others => '0');
+                            end loop;
+                   end loop;
+ 
+              done <= '1';
+        else
+        NULL;
+        end if;
+    end if;
+end process;
+
+end architecture;
