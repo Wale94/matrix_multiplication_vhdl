@@ -1,0 +1,65 @@
+library IEEE;
+use IEEE.Std_logic_1164.all;
+use IEEE.Numeric_Std.all;
+
+entity matrix_mult_tb is
+end;
+
+architecture bench of matrix_mult_tb is
+
+  component matrix_mult
+      port (  Clock: in std_logic; 
+              reset : in std_logic;
+              start : in std_logic;
+              A,B : in unsigned(71 downto 0);
+              C : out unsigned(143 downto 0);
+              done : out std_logic
+              );
+  end component;
+
+  signal Clock: std_logic;
+  signal reset: std_logic;
+  signal start: std_logic;
+  signal A,B: unsigned(71 downto 0);
+  signal C: unsigned(143 downto 0);
+  signal done: std_logic ;
+
+  constant clock_period: time := 10 ns;
+  signal stop_the_clock: boolean;
+
+begin
+
+  uut: matrix_mult port map ( Clock => Clock,
+                              reset => reset,
+                              start => start,
+                              A     => A,
+                              B     => B,
+                              C     => C,
+                              done  => done );
+
+  stimulus: process
+  begin
+  
+    -- Put initialisation code here
+reset <= '0';
+start <= '1';
+A <= X"020000000000000000";
+B <= X"020000000000000000";
+
+    -- Put test bench stimulus code here
+
+    --stop_the_clock <= true;
+    wait;
+  end process;
+
+  clocking: process
+  begin
+    while not stop_the_clock loop
+      Clock <= '0', '1' after clock_period / 2;
+      wait for clock_period;
+    end loop;
+    wait;
+  end process;
+
+end;
+  
